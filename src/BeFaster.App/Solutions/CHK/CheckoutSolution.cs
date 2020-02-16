@@ -23,6 +23,7 @@ namespace BeFaster.App.Solutions.CHK
         private class FreeProduct: Product
         {
             public int NumberOfItemsRequired { get; set; }
+
             public FreeProduct(string name, int numberOfItemsRequired, int count = 1) : base(name, count)
             {
                 NumberOfItemsRequired = numberOfItemsRequired;
@@ -47,18 +48,14 @@ namespace BeFaster.App.Solutions.CHK
 
                 int totalPrice = 0;
 
-                // Apply free Items
-
-                products = ApplyFreeItemsNew(products);
-
+                // Apply free item discount
+                products = ApplyFreeItems(products);
 
                 foreach (var p in products)
                 {
                     totalPrice = totalPrice + CalculatePriceForProduct(p.Name, p.Count);
                 }
-
-                //totalPrice = ApplyFreeItems(totalPrice, products);
-
+                
                 return totalPrice;
             }
             return -1;
@@ -127,33 +124,39 @@ namespace BeFaster.App.Solutions.CHK
         }
 
 
-
-        private static List<Product> ApplyFreeItemsNew(List<Product> products)
+        /// <summary>
+        /// Retrieves free item offers from GetFreeProductList().
+        /// Validates if requirements match, updates product count for total basket calculation.
+        /// </summary>
+        /// <param name="products"></param>
+        /// <returns></returns>
+        private static List<Product> ApplyFreeItems(List<Product> products)
         {
             // Product names and number of items to remove.
             var freeItemList = new List<FreeProduct>();
 
             foreach (var pr in products)
             {
-                var res = GetFreeProductList().Where(p =>
+
+                // Full free item offer list for current product
+                var offersForProduct = GetFreeProductList().Where(p =>
                         p.Key.IndexOf(pr.Name, StringComparison.CurrentCultureIgnoreCase) > -1)
                     .Select(o =>
                         new FreeProduct(o.Value, GetProductCountFromProductCode(pr.Name, o.Key))).ToList();
 
-                // Having count with discounted product name
-
+                
                 // Check if offer available and offered product exists in basket
-                if (res.Any() && products.Any(x => x.Name == res.First().Name))
+                if (offersForProduct.Any() && products.Any(x => x.Name == offersForProduct.First().Name))
                 {
                     int discountForProductCount = pr.Count;
-                    var freeItemOffer = res.Where(x => discountForProductCount >= x.Count).OrderByDescending(o => o.Count).FirstOrDefault();
+                    var freeItemOffer = offersForProduct.Where(x => discountForProductCount >= x.NumberOfItemsRequired).OrderByDescending(o => o.Count).FirstOrDefault();
 
                     while (freeItemOffer != null)
                     {
                         freeItemList.Add(new FreeProduct(freeItemOffer.Name, freeItemOffer.Count));
                         discountForProductCount -= freeItemOffer.NumberOfItemsRequired;
 
-                        freeItemOffer = res.Where(x => discountForProductCount >= x.Count).OrderByDescending(o => o.Count).FirstOrDefault();
+                        freeItemOffer = offersForProduct.Where(x => discountForProductCount >= x.Count).OrderByDescending(o => o.Count).FirstOrDefault();
                     }
                 }
             }
