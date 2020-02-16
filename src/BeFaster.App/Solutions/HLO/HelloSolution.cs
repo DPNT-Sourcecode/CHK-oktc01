@@ -11,9 +11,9 @@ namespace BeFaster.App.Solutions.HLO
         /// <returns></returns>
         public static string Hello(string friendName)
         {
-            //StringBuilder builder = new StringBuilder("Hello ");
-            //builder.Append(friendName);
-            return GetGreeting(friendName);
+            StringBuilder builder = new StringBuilder("Hello, ");
+            builder.Append(friendName);
+            return builder.ToString();
         }
 
         private static string GetGreeting(string friendName)
@@ -28,4 +28,5 @@ namespace BeFaster.App.Solutions.HLO
         }
     }
 }
+
 
