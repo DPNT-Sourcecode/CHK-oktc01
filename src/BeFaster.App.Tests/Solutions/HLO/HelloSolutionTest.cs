@@ -14,5 +14,12 @@ namespace BeFaster.App.Tests.Solutions.SUM
         {
             Assert.True(HelloSolution.Hello(param).IndexOf(param,StringComparison.CurrentCultureIgnoreCase) > -1);
         }
+
+        [TestCase("FriendName")]
+        public void ResponseShouldEndWithExclamation(string param)
+        {
+            Assert.True(HelloSolution.Hello(param).EndsWith("!"));
+        }
     }
 }
+

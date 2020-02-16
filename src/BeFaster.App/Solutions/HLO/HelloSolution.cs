@@ -1,6 +1,7 @@
 ﻿using System.Text;
 
 namespace BeFaster.App.Solutions.HLO
+
 {
     public static class HelloSolution
     {
@@ -13,6 +14,7 @@ namespace BeFaster.App.Solutions.HLO
         {
             StringBuilder builder = new StringBuilder("Hello, ");
             builder.Append(friendName);
+            builder.Append("!");
             return builder.ToString();
         }
 
@@ -28,5 +30,6 @@ namespace BeFaster.App.Solutions.HLO
         }
     }
 }
+
 
 
