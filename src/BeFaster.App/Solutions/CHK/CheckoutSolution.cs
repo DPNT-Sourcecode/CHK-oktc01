@@ -156,7 +156,7 @@ namespace BeFaster.App.Solutions.CHK
                         freeItemList.Add(new FreeProduct(freeItemOffer.Name, freeItemOffer.Count));
                         discountForProductCount -= freeItemOffer.NumberOfItemsRequired;
 
-                        freeItemOffer = offersForProduct.Where(x => discountForProductCount >= x.Count).OrderByDescending(o => o.Count).FirstOrDefault();
+                        freeItemOffer = offersForProduct.Where(x => discountForProductCount >= x.NumberOfItemsRequired).OrderByDescending(o => o.Count).FirstOrDefault();
                     }
                 }
             }
