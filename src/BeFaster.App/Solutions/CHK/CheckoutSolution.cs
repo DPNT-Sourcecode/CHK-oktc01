@@ -8,6 +8,28 @@ namespace BeFaster.App.Solutions.CHK
     public static class CheckoutSolution
     {
 
+        private class Product
+        {
+            public string Name { get; set; }
+            public int Count { get; set; }
+
+            public Product(string name, int count)
+            {
+                Name = name;
+                Count = count;
+            }
+        }
+
+        private class FreeProduct: Product
+        {
+            public int NumberOfItemsRequired { get; set; }
+            public FreeProduct(string name, int numberOfItemsRequired, int count = 1) : base(name, count)
+            {
+                NumberOfItemsRequired = numberOfItemsRequired;
+            }
+        }
+
+
         /// <summary>
         /// Calculates price.
         /// Sku parameter must be without delimiters and contain the uppercase product codes.
@@ -21,16 +43,21 @@ namespace BeFaster.App.Solutions.CHK
             if (skusArray != null)
             {
                 var products = skusArray.GroupBy(n => n)
-                    .Select(c => new KeyValuePair<string, int>(c.Key.ToString(), c.Count())).ToList();
+                    .Select(c => new Product(c.Key.ToString(), c.Count())).ToList();
 
                 int totalPrice = 0;
 
+                // Apply free Items
+
+                products = ApplyFreeItemsNew(products);
+
+
                 foreach (var p in products)
                 {
-                    totalPrice = totalPrice + CalculatePriceForProduct(p.Key, p.Value);
+                    totalPrice = totalPrice + CalculatePriceForProduct(p.Name, p.Count);
                 }
 
-                totalPrice = ApplyFreeItems(totalPrice, products);
+                //totalPrice = ApplyFreeItems(totalPrice, products);
 
                 return totalPrice;
             }
@@ -98,6 +125,50 @@ namespace BeFaster.App.Solutions.CHK
 
             return res.Where(x => numberOfItems >= x.Key).OrderByDescending(o => o.Key).FirstOrDefault();
         }
+
+
+
+        private static List<Product> ApplyFreeItemsNew(List<Product> products)
+        {
+            // Product names and number of items to remove.
+            var freeItemList = new List<FreeProduct>();
+
+            foreach (var pr in products)
+            {
+                var res = GetFreeProductList().Where(p =>
+                        p.Key.IndexOf(pr.Name, StringComparison.CurrentCultureIgnoreCase) > -1)
+                    .Select(o =>
+                        new FreeProduct(o.Value, GetProductCountFromProductCode(pr.Name, o.Key))).ToList();
+
+                // Having count with discounted product name
+
+                // Check if offer available and offered product exists in basket
+                if (res.Any() && products.Any(x => x.Name == res.First().Name))
+                {
+                    int discountForProductCount = pr.Count;
+                    var freeItemOffer = res.Where(x => discountForProductCount >= x.Count).OrderByDescending(o => o.Count).FirstOrDefault();
+
+                    while (freeItemOffer != null)
+                    {
+                        freeItemList.Add(new FreeProduct(freeItemOffer.Name, freeItemOffer.Count));
+                        discountForProductCount -= freeItemOffer.NumberOfItemsRequired;
+
+                        freeItemOffer = res.Where(x => discountForProductCount >= x.Count).OrderByDescending(o => o.Count).FirstOrDefault();
+                    }
+                }
+            }
+
+            freeItemList.ForEach(x =>
+            {
+                var product = products.Single(p => p.Name == x.Name);
+                product.Count -= x.Count;
+            });
+
+            return products;
+        }
+
+
+
 
         private static int ApplyFreeItems(int totalPrice, List<KeyValuePair<string,int>> products)
         {
