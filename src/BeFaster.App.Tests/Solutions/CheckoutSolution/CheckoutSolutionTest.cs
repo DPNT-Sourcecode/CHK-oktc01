@@ -16,20 +16,22 @@ namespace BeFaster.App.Tests.Solutions.CheckoutSolution
             return CheckoutSolution.ComputePrice(param);
         }
 
-        [TestCase("abcd", ExpectedResult = 115)]
-        [TestCase("aaaad", ExpectedResult = 195)]
-        [TestCase("bbd", ExpectedResult = 60)]
-        [TestCase("BBbd", ExpectedResult = 90)]
-        [TestCase("a", ExpectedResult = 50)]
+        [TestCase("ABCD", ExpectedResult = 115)]
+        [TestCase("AAAAD", ExpectedResult = 195)]
+        [TestCase("BBD", ExpectedResult = 60)]
+        [TestCase("BBBD", ExpectedResult = 90)]
+        [TestCase("a", ExpectedResult = -1)]
         [TestCase("A", ExpectedResult = 50)]
         [TestCase("B", ExpectedResult = 30)]
-        [TestCase("b", ExpectedResult = 30)]
+        [TestCase("b", ExpectedResult = -1)]
         [TestCase("C", ExpectedResult = 20)]
-        [TestCase("c", ExpectedResult = 20)]
-        [TestCase("d", ExpectedResult = 15)]
+        [TestCase("c", ExpectedResult = -1)]
+        [TestCase("d", ExpectedResult = -1)]
         [TestCase("D", ExpectedResult = 15)]
-        [TestCase("alsdkfjdsa", ExpectedResult = -1)]
+        [TestCase("AAb", ExpectedResult = -1)]
         [TestCase("k", ExpectedResult = -1)]
+        [TestCase("", ExpectedResult = 0)]
+        [TestCase("ABCa", ExpectedResult = -1)]
         public static int ComputePriceReturnsValidResult(string param)
         {
             return CheckoutSolution.ComputePrice(param);

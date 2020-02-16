@@ -6,25 +6,30 @@ namespace BeFaster.App.Solutions.CHK
 {
     public static class CheckoutSolution
     {
+
+        /// <summary>
+        /// Calculates price.
+        /// Sku parameter must be without delimiters and contain the uppercase product codes.
+        /// Based on the price list there will be the best offer applied. 
+        /// </summary>
+        /// <param name="skus"></param>
+        /// <returns></returns>
         public static int ComputePrice(string skus)
         {
             var skusArray = ValidateAndParseInput(skus);
             if (skusArray != null)
             {
-                if (skusArray.Any())
+                var result = skusArray.GroupBy(n => n)
+                    .Select(c => new KeyValuePair<string, int>(c.Key.ToString(), c.Count()));
+
+                int totalPrice = 0;
+
+                foreach (var p in result)
                 {
-                    var result = skusArray.GroupBy(n => n)
-                        .Select(c => new KeyValuePair<string, int>(c.Key.ToString(), c.Count()));
-
-                    int totalPrice = 0;
-
-                    foreach (var p in result)
-                    {
-                        totalPrice = totalPrice + CalculatePriceForProduct(p.Key, p.Value);
-                    }
-
-                    return totalPrice;
+                    totalPrice = totalPrice + CalculatePriceForProduct(p.Key, p.Value);
                 }
+
+                return totalPrice;
             }
             return -1;
         }
@@ -32,31 +37,25 @@ namespace BeFaster.App.Solutions.CHK
 
         private static char[] ValidateAndParseInput(string skus)
         {
-            if (SkusParamIsValid(skus))
+            if (skus != null)
             {
                 char[] skusArray;
-                skusArray = skus.ToLowerInvariant().ToCharArray();
+                skusArray = skus.ToCharArray();
 
-                if (ProductsExistsInPricelist(skusArray))
+                if (SkusValid(skusArray))
                     return skusArray;
             }
 
             return null;
         }
 
-        private static bool ProductsExistsInPricelist(char[] skus)
+        private static bool SkusValid(char[] skus)
         {
+            if (!skus.Any()) return true;
+
             var priceList = GetPriceList();
             return
-                skus.All(x => priceList.Any(p => p.Key.IndexOf(x.ToString(),StringComparison.CurrentCultureIgnoreCase) > -1));
-        }
-
-        private static bool SkusParamIsValid(string param)
-        {
-            if (string.IsNullOrWhiteSpace(param))
-                return false;
-
-            return true;
+                skus.All(x => priceList.Any(p => p.Key.IndexOf(x) > -1));
         }
 
         private static int CalculatePriceForProduct(string product, int numberOfItems)
@@ -110,12 +109,12 @@ namespace BeFaster.App.Solutions.CHK
         {
             return new Dictionary<string, int>
             {
-                {"a",50},
-                {"3a",130},
-                {"b",30},
-                {"2b",45},
-                {"c",20},
-                {"d",15}
+                {"A",50},
+                {"3A",130},
+                {"B",30},
+                {"2B",45},
+                {"C",20},
+                {"D",15}
             };
         }
 
