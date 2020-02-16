@@ -9,7 +9,7 @@ namespace BeFaster.App.Tests.Solutions.CheckoutSolution
     {
 
         [TestCase(null, ExpectedResult = -1)]
-        [TestCase("", ExpectedResult = -1)]
+        [TestCase("", ExpectedResult = 0)]
         [TestCase(" ", ExpectedResult = -1)]
         public static int ComputePriceShouldValidateInput(string param)
         {
@@ -33,6 +33,14 @@ namespace BeFaster.App.Tests.Solutions.CheckoutSolution
         [TestCase("", ExpectedResult = 0)]
         [TestCase("ABCa", ExpectedResult = -1)]
         public static int ComputePriceReturnsValidResult(string param)
+        {
+            return CheckoutSolution.ComputePrice(param);
+        }
+
+        [TestCase("EE", ExpectedResult = 80)]
+        [TestCase("EEB", ExpectedResult = 80)]
+        [TestCase("EEBB", ExpectedResult = 95)]
+        public static int ShouldApplyFreeProduct(string param)
         {
             return CheckoutSolution.ComputePrice(param);
         }
