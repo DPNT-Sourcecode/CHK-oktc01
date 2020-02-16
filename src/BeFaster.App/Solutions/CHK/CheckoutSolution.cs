@@ -8,10 +8,9 @@ namespace BeFaster.App.Solutions.CHK
     {
         public static int ComputePrice(string skus)
         {
-            if (ComputePriceParamIsValid(skus))
+            var skusArray = ValidateAndParseInput(skus);
+            if (skusArray != null)
             {
-                var skusArray = ParseInput(skus);
-
                 if (skusArray.Any())
                 {
                     var result = skusArray.GroupBy(n => n)
@@ -28,23 +27,41 @@ namespace BeFaster.App.Solutions.CHK
                 }
             }
 
+
             return -1;
         }
 
 
-        private static string[] ParseInput(string skus)
+        private static string[] ValidateAndParseInput(string skus)
         {
-            if (skus.IndexOf(',') > -1)
-                return skus.Split(',');
-            
-            return skus.Split(';');
+            if (SkusParamIsValid(skus))
+            {
+                string[] skusArray;
+
+                if (skus.IndexOf(',') > -1)
+                    skusArray = skus.Split(',');
+                else
+                    skusArray = skus.Split(';');
+
+                if (ProductsExistsInPricelist(skusArray))
+                    return skusArray;
+            }
+
+            return null;
         }
 
-        private static bool ComputePriceParamIsValid(string param)
+        private static bool ProductsExistsInPricelist(string[] skus)
+        {
+            var priceList = GetPriceList();
+            return
+                skus.All(x => priceList.Any(p => p.Key.IndexOf(x, StringComparison.CurrentCultureIgnoreCase) > -1));
+        }
+
+        private static bool SkusParamIsValid(string param)
         {
             if (string.IsNullOrWhiteSpace(param))
                 return false;
-            
+
             if (param.IndexOf(',') == -1 && param.IndexOf(';') == -1 && param.Length > 1)
                 return false;
 
@@ -80,17 +97,7 @@ namespace BeFaster.App.Solutions.CHK
         /// <returns></returns>
         private static KeyValuePair<int, int> GetBestOffer(string product, int numberOfItems)
         {
-            var priceList = new Dictionary<string, int>
-            {
-                {"a",50},
-                {"3a",130},
-                {"b",30},
-                {"2b",45},
-                {"c",20},
-                {"d",15}
-            };
-
-            var res = priceList.Where(p =>
+            var res = GetPriceList().Where(p =>
                 p.Key.IndexOf(product, StringComparison.CurrentCultureIgnoreCase) > -1)
                 .Select(o =>
                 new KeyValuePair<int, int>(
@@ -106,6 +113,19 @@ namespace BeFaster.App.Solutions.CHK
             if (string.IsNullOrWhiteSpace(productCode)) return 1;
 
             return int.Parse(productCode);
+        }
+
+        private static Dictionary<string, int> GetPriceList()
+        {
+            return new Dictionary<string, int>
+            {
+                {"a",50},
+                {"3a",130},
+                {"b",30},
+                {"2b",45},
+                {"c",20},
+                {"d",15}
+            };
         }
 
     }
