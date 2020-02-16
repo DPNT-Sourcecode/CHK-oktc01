@@ -35,7 +35,7 @@ namespace BeFaster.App.Solutions.CHK
             if (SkusParamIsValid(skus))
             {
                 char[] skusArray;
-                skusArray = skus.ToCharArray();
+                skusArray = skus.ToLowerInvariant().ToCharArray();
 
                 if (ProductsExistsInPricelist(skusArray))
                     return skusArray;
