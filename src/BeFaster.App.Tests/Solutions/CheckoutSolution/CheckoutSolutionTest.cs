@@ -16,10 +16,10 @@ namespace BeFaster.App.Tests.Solutions.CheckoutSolution
             return CheckoutSolution.ComputePrice(param);
         }
 
-        [TestCase("a,b,c,d", ExpectedResult = 115)]
-        [TestCase("a,a,a,a,d", ExpectedResult = 195)]
-        [TestCase("b,b,d", ExpectedResult = 60)]
-        [TestCase("B,B,b,d", ExpectedResult = 90)]
+        [TestCase("abcd", ExpectedResult = 115)]
+        [TestCase("aaaad", ExpectedResult = 195)]
+        [TestCase("bbd", ExpectedResult = 60)]
+        [TestCase("BBbd", ExpectedResult = 90)]
         [TestCase("a", ExpectedResult = 50)]
         [TestCase("A", ExpectedResult = 50)]
         [TestCase("B", ExpectedResult = 30)]

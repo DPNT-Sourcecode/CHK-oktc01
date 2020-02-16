@@ -14,7 +14,7 @@ namespace BeFaster.App.Solutions.CHK
                 if (skusArray.Any())
                 {
                     var result = skusArray.GroupBy(n => n)
-                        .Select(c => new KeyValuePair<string, int>(c.Key, c.Count()));
+                        .Select(c => new KeyValuePair<string, int>(c.Key.ToString(), c.Count()));
 
                     int totalPrice = 0;
 
@@ -26,22 +26,16 @@ namespace BeFaster.App.Solutions.CHK
                     return totalPrice;
                 }
             }
-
-
             return -1;
         }
 
 
-        private static string[] ValidateAndParseInput(string skus)
+        private static char[] ValidateAndParseInput(string skus)
         {
             if (SkusParamIsValid(skus))
             {
-                string[] skusArray;
-
-                if (skus.IndexOf(',') > -1)
-                    skusArray = skus.Split(',');
-                else
-                    skusArray = skus.Split(';');
+                char[] skusArray;
+                skusArray = skus.ToCharArray();
 
                 if (ProductsExistsInPricelist(skusArray))
                     return skusArray;
@@ -50,19 +44,16 @@ namespace BeFaster.App.Solutions.CHK
             return null;
         }
 
-        private static bool ProductsExistsInPricelist(string[] skus)
+        private static bool ProductsExistsInPricelist(char[] skus)
         {
             var priceList = GetPriceList();
             return
-                skus.All(x => priceList.Any(p => p.Key.IndexOf(x, StringComparison.CurrentCultureIgnoreCase) > -1));
+                skus.All(x => priceList.Any(p => p.Key.IndexOf(x.ToString(),StringComparison.CurrentCultureIgnoreCase) > -1));
         }
 
         private static bool SkusParamIsValid(string param)
         {
             if (string.IsNullOrWhiteSpace(param))
-                return false;
-
-            if (param.IndexOf(',') == -1 && param.IndexOf(';') == -1 && param.Length > 1)
                 return false;
 
             return true;
