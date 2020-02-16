@@ -10,26 +10,45 @@ namespace BeFaster.App.Solutions.CHK
         {
             if (ComputePriceParamIsValid(skus))
             {
-                var skusArray = skus.Split(',');
-                var result = skusArray.GroupBy(n => n)
-                    .Select(c => new KeyValuePair<string, int>(c.Key, c.Count()));
+                var skusArray = ParseInput(skus);
 
-                int totalPrice = 0;
-
-                foreach (var p in result)
+                if (skusArray.Any())
                 {
-                    totalPrice = totalPrice + CalculatePriceForProduct(p.Key, p.Value);
-                }
+                    var result = skusArray.GroupBy(n => n)
+                        .Select(c => new KeyValuePair<string, int>(c.Key, c.Count()));
 
-                return totalPrice;
+                    int totalPrice = 0;
+
+                    foreach (var p in result)
+                    {
+                        totalPrice = totalPrice + CalculatePriceForProduct(p.Key, p.Value);
+                    }
+
+                    return totalPrice;
+                }
             }
 
             return -1;
         }
 
+
+        private static string[] ParseInput(string skus)
+        {
+            if (skus.IndexOf(',') > -1)
+                return skus.Split(',');
+            
+            return skus.Split(';');
+        }
+
         private static bool ComputePriceParamIsValid(string param)
         {
-            return !string.IsNullOrWhiteSpace(param);
+            if (string.IsNullOrWhiteSpace(param))
+                return false;
+            
+            if (param.IndexOf(',') == -1 && param.IndexOf(';') == -1 && param.Length > 1)
+                return false;
+
+            return true;
         }
 
         private static int CalculatePriceForProduct(string product, int numberOfItems)
@@ -91,4 +110,3 @@ namespace BeFaster.App.Solutions.CHK
 
     }
 }
-
