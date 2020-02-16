@@ -19,6 +19,7 @@ namespace BeFaster.App.Tests.Solutions.CheckoutSolution
         [TestCase("a,b,c,d", ExpectedResult = 115)]
         [TestCase("a,a,a,a,d", ExpectedResult = 195)]
         [TestCase("b,b,d", ExpectedResult = 60)]
+        [TestCase("B,B,b,d", ExpectedResult = 90)]
         public static int ComputePriceReturnsValidResult(string param)
         {
             return CheckoutSolution.ComputePrice(param);
@@ -26,3 +27,4 @@ namespace BeFaster.App.Tests.Solutions.CheckoutSolution
 
     }
 }
+

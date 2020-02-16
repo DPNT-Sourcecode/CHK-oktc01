@@ -83,7 +83,7 @@ namespace BeFaster.App.Solutions.CHK
 
         private static int GetProductCountFromProductCode(string productName, string productCode)
         {
-            productCode = productCode.Replace(productName, "");
+            productCode = productCode.ToLowerInvariant().Replace(productName.ToLowerInvariant(), "");
             if (string.IsNullOrWhiteSpace(productCode)) return 1;
 
             return int.Parse(productCode);
@@ -91,3 +91,4 @@ namespace BeFaster.App.Solutions.CHK
 
     }
 }
+
