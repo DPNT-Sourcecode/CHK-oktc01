@@ -201,34 +201,22 @@ namespace BeFaster.App.Solutions.CHK
 
             int totalPrice = 0;
 
-            // TODO: If total count < 3 return
             int itemsApplied = 0;
             foreach (var p in orderedList)
             {
-                while (groupProductCount >=3 && p.Count != 0)
+                while (groupProductCount >= 3 && p.Count != 0)
                 {
-                    if (p.Count >= 3)
-                    {
-                        p.Count -= 3;
-                        itemsApplied += 3;
-                        groupProductCount -= 3;
-                    }
-                    else
-                    {
-                        p.Count--;
-                        itemsApplied++;
-                        groupProductCount--;
-                    }
+                    p.Count--;
+                    itemsApplied++;
 
                     if (itemsApplied >= 3)
                     {
                         totalPrice += 45;
                         itemsApplied -= 3;
+                        groupProductCount -= 3;
                     }
                 }
 
-                if (groupProductCount < 3)
-                    break;
             }
 
             // update product counts

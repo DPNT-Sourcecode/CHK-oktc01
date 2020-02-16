@@ -56,6 +56,9 @@ namespace BeFaster.App.Tests.Solutions.CheckoutSolution
 
 
         [TestCase("STXYZ", ExpectedResult = 82)]
+        [TestCase("STX", ExpectedResult = 45)]
+        [TestCase("STXSTX", ExpectedResult = 90)]
+        [TestCase("SSSZ", ExpectedResult = 65)]
         public static int ShouldApplyGroupOrderDiscount(string param)
         {
             return CheckoutSolution.ComputePrice(param);
