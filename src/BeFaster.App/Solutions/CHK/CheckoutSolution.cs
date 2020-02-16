@@ -133,7 +133,7 @@ namespace BeFaster.App.Solutions.CHK
         private static List<Product> ApplyFreeItems(List<Product> products)
         {
             // Product names and number of items to remove.
-            var freeItemList = new List<FreeProduct>();
+            var freeItemList = new HashSet<FreeProduct>();
 
             foreach (var pr in products)
             {
@@ -170,11 +170,11 @@ namespace BeFaster.App.Solutions.CHK
                 }
             }
 
-            freeItemList.ForEach(x =>
+            foreach (var f in freeItemList)
             {
-                var product = products.Single(p => p.Name == x.Name);
-                product.Count -= x.Count;
-            });
+                var product = products.Single(p => p.Name == f.Name);
+                product.Count -= f.Count;
+            }
 
             return products;
         }
@@ -232,6 +232,33 @@ namespace BeFaster.App.Solutions.CHK
                 {"D",15},
                 {"E",40},
                 {"F",10},
+                {"G",20},
+                {"H",10},
+                {"5H",45},
+                {"10H",80},
+                {"I",35},
+                {"J",60},
+                {"K",80},
+                {"2K",150},
+                {"L",90},
+                {"M",15},
+                {"N",40},
+                {"O",10},
+                {"P",50},
+                {"5P",200},
+                {"Q",30},
+                {"3Q",80},
+                {"R",50},
+                {"S",30},
+                {"T",20},
+                {"U",40},
+                {"V",50},
+                {"2V",90},
+                {"3V",130},
+                {"W",20},
+                {"X",90},
+                {"Y",10},
+                {"Z",50}
             };
         }
 
@@ -240,7 +267,10 @@ namespace BeFaster.App.Solutions.CHK
             return new Dictionary<string, string>
             {
                 {"2E", "B"},
-                {"2F", "F"}
+                {"2F", "F"},
+                {"3N", "M"},
+                {"3R", "Q"},
+                {"3U", "U"},
             };
         }
 
