@@ -13,6 +13,8 @@ namespace BeFaster.App.Solutions.CHK
             public string Name { get; set; }
             public int Count { get; set; }
 
+            public int Price { get; set; }
+
             public Product(string name, int count)
             {
                 Name = name;
@@ -20,7 +22,7 @@ namespace BeFaster.App.Solutions.CHK
             }
         }
 
-        private class FreeProduct: Product
+        private class FreeProduct : Product
         {
             public int NumberOfItemsRequired { get; set; }
 
@@ -51,11 +53,13 @@ namespace BeFaster.App.Solutions.CHK
                 // Apply free item discount
                 products = ApplyFreeItems(products);
 
+                totalPrice = ApplyGroupOfferPrices(products);
+
                 foreach (var p in products)
                 {
                     totalPrice = totalPrice + CalculatePriceForProduct(p.Name, p.Count);
                 }
-                
+
                 return totalPrice;
             }
             return -1;
@@ -144,15 +148,15 @@ namespace BeFaster.App.Solutions.CHK
                     .Select(o =>
                         new FreeProduct(o.Value, GetProductCountFromProductCode(pr.Name, o.Key))).ToList();
 
-                
+
                 // Check if offer available and offered product exists in basket
                 if (offersForProduct.Any() && products.Any(x => x.Name == offersForProduct.First().Name))
                 {
                     int discountForProductCount = pr.Count;
                     bool sameProductDiscount = pr.Name == offersForProduct.First().Name;
                     var freeItemOffer = offersForProduct.Where(x =>
-                        sameProductDiscount ?  
-                            discountForProductCount > x.NumberOfItemsRequired : 
+                        sameProductDiscount ?
+                            discountForProductCount > x.NumberOfItemsRequired :
                             discountForProductCount >= x.NumberOfItemsRequired
                         ).OrderByDescending(o => o.Count).FirstOrDefault();
 
@@ -179,37 +183,62 @@ namespace BeFaster.App.Solutions.CHK
             return products;
         }
 
-
-
-
-        private static int ApplyFreeItems(int totalPrice, List<KeyValuePair<string,int>> products)
+        private static int ApplyGroupOfferPrices(List<Product> products)
         {
-            foreach (var pr in products)
+            var groupOfferProducts = GetGroupOfferProducts();
+            var pricelist = GetPriceList();
+
+            var filteredProducts = products.Where(x => groupOfferProducts.Contains(x.Name)).ToList();
+
+            int groupProductCount = 0;
+            filteredProducts.ForEach(x =>
             {
-                var res = GetFreeProductList().Where(p =>
-                        p.Key.IndexOf(pr.Key, StringComparison.CurrentCultureIgnoreCase) > -1)
-                    .Select(o =>
-                        new KeyValuePair<int, string>(
-                            GetProductCountFromProductCode(pr.Key, o.Key), o.Value)).ToList();
+                groupProductCount += x.Count;
+                x.Price = pricelist[x.Name];
+            });
 
-                // Having count with discounted product name
+            var orderedList = filteredProducts.OrderByDescending(x => x.Price).ToList();
 
-                // Check if offer available and offered product exists in basket
-                if (res.Any() && products.Any(x => x.Key == res.First().Value))
+            int totalPrice = 0;
+
+            // TODO: If total count < 3 return
+            int itemsApplied = 0;
+            foreach (var p in orderedList)
+            {
+                while (groupProductCount >=3 && p.Count != 0)
                 {
-                    var freeItemOffer = res.Where(x => pr.Value >= x.Key).OrderByDescending(o => o.Key).FirstOrDefault();
+                    if (p.Count >= 3)
+                    {
+                        p.Count -= 3;
+                        itemsApplied += 3;
+                        groupProductCount -= 3;
+                    }
+                    else
+                    {
+                        p.Count--;
+                        itemsApplied++;
+                        groupProductCount--;
+                    }
 
-                    // Get price by product code
-                    var discount = GetPriceList().SingleOrDefault(x => x.Key == freeItemOffer.Value);
-
-                    // Discount this price
-                    totalPrice -= discount.Value;
+                    if (itemsApplied >= 3)
+                    {
+                        totalPrice += 45;
+                        itemsApplied -= 3;
+                    }
                 }
+
+                if (groupProductCount < 3)
+                    break;
+            }
+
+            // update product counts
+            foreach (var product in orderedList)
+            {
+                products.Single(p => p.Name == product.Name).Count = product.Count;
             }
 
             return totalPrice;
         }
-
 
         private static int GetProductCountFromProductCode(string productName, string productCode)
         {
@@ -238,8 +267,8 @@ namespace BeFaster.App.Solutions.CHK
                 {"10H",80},
                 {"I",35},
                 {"J",60},
-                {"K",80},
-                {"2K",150},
+                {"K",70},
+                {"2K",120},
                 {"L",90},
                 {"M",15},
                 {"N",40},
@@ -249,21 +278,22 @@ namespace BeFaster.App.Solutions.CHK
                 {"Q",30},
                 {"3Q",80},
                 {"R",50},
-                {"S",30},
+                {"S",20},
                 {"T",20},
                 {"U",40},
                 {"V",50},
                 {"2V",90},
                 {"3V",130},
                 {"W",20},
-                {"X",90},
-                {"Y",10},
-                {"Z",50}
+                {"X",17},
+                {"Y",20},
+                {"Z",21}
             };
         }
 
         private static Dictionary<string, string> GetFreeProductList()
         {
+            // Amount of product and free product
             return new Dictionary<string, string>
             {
                 {"2E", "B"},
@@ -272,6 +302,11 @@ namespace BeFaster.App.Solutions.CHK
                 {"3R", "Q"},
                 {"3U", "U"},
             };
+        }
+
+        private static string[] GetGroupOfferProducts()
+        {
+            return new[] { "S", "T", "X", "Y", "Z" };
         }
 
     }
