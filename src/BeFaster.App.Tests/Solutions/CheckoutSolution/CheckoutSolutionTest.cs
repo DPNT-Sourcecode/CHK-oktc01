@@ -44,6 +44,10 @@ namespace BeFaster.App.Tests.Solutions.CheckoutSolution
         [TestCase("ABCDEABCDE", ExpectedResult = 280)]
         [TestCase("ABCDE", ExpectedResult = 155)]
         [TestCase("ABCDECBAABCABBAAAEEAA", ExpectedResult = 665)]
+        [TestCase("FFF", ExpectedResult = 20)]
+        [TestCase("FFFF", ExpectedResult = 30)]
+        [TestCase("FFFFF", ExpectedResult = 30)]
+        [TestCase("FFFFFF", ExpectedResult = 40)]
         public static int ShouldApplyFreeProduct(string param)
         {
             return CheckoutSolution.ComputePrice(param);

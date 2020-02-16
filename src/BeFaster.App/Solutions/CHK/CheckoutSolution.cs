@@ -149,14 +149,23 @@ namespace BeFaster.App.Solutions.CHK
                 if (offersForProduct.Any() && products.Any(x => x.Name == offersForProduct.First().Name))
                 {
                     int discountForProductCount = pr.Count;
-                    var freeItemOffer = offersForProduct.Where(x => discountForProductCount >= x.NumberOfItemsRequired).OrderByDescending(o => o.Count).FirstOrDefault();
+                    bool sameProductDiscount = pr.Name == offersForProduct.First().Name;
+                    var freeItemOffer = offersForProduct.Where(x =>
+                        sameProductDiscount ?  
+                            discountForProductCount > x.NumberOfItemsRequired : 
+                            discountForProductCount >= x.NumberOfItemsRequired
+                        ).OrderByDescending(o => o.Count).FirstOrDefault();
 
                     while (freeItemOffer != null)
                     {
                         freeItemList.Add(new FreeProduct(freeItemOffer.Name, freeItemOffer.Count));
                         discountForProductCount -= freeItemOffer.NumberOfItemsRequired;
 
-                        freeItemOffer = offersForProduct.Where(x => discountForProductCount >= x.NumberOfItemsRequired).OrderByDescending(o => o.Count).FirstOrDefault();
+                        freeItemOffer = offersForProduct.Where(x =>
+                            sameProductDiscount ?
+                                discountForProductCount > x.NumberOfItemsRequired :
+                                discountForProductCount >= x.NumberOfItemsRequired
+                                ).OrderByDescending(o => o.Count).FirstOrDefault();
                     }
                 }
             }
@@ -222,6 +231,7 @@ namespace BeFaster.App.Solutions.CHK
                 {"C",20},
                 {"D",15},
                 {"E",40},
+                {"F",10},
             };
         }
 
@@ -229,7 +239,8 @@ namespace BeFaster.App.Solutions.CHK
         {
             return new Dictionary<string, string>
             {
-                {"2E", "B"}
+                {"2E", "B"},
+                {"2F", "F"}
             };
         }
 
