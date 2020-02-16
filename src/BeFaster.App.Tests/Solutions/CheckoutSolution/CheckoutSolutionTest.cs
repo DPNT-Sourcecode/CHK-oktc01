@@ -37,9 +37,12 @@ namespace BeFaster.App.Tests.Solutions.CheckoutSolution
             return CheckoutSolution.ComputePrice(param);
         }
 
-        [TestCase("EE", ExpectedResult = 80)]
-        [TestCase("EEB", ExpectedResult = 80)]
-        [TestCase("EEBB", ExpectedResult = 95)]
+        //[TestCase("EE", ExpectedResult = 80)]
+        //[TestCase("EEB", ExpectedResult = 80)]
+        //[TestCase("EEBB", ExpectedResult = 95)]
+        [TestCase("EEEEBB", ExpectedResult = 160)]
+        [TestCase("BEBEEE", ExpectedResult = 160)]
+        [TestCase("ABCDEABCDE", ExpectedResult = 280)]
         public static int ShouldApplyFreeProduct(string param)
         {
             return CheckoutSolution.ComputePrice(param);
@@ -47,3 +50,4 @@ namespace BeFaster.App.Tests.Solutions.CheckoutSolution
 
     }
 }
+
