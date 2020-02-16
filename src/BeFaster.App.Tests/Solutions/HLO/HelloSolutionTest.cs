@@ -1,9 +1,8 @@
 ﻿using System;
 using BeFaster.App.Solutions.HLO;
-using BeFaster.App.Solutions.SUM;
 using NUnit.Framework;
 
-namespace BeFaster.App.Tests.Solutions.SUM
+namespace BeFaster.App.Tests.Solutions.HLO
 {
     [TestFixture]
     public class HelloSolutionTest
@@ -22,4 +21,3 @@ namespace BeFaster.App.Tests.Solutions.SUM
         }
     }
 }
-
